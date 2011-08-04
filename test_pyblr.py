@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 from nose.tools import *
+from minimock import mock, Mock, restore, TraceTracker, assert_same_trace 
 import pyblr
 import oauth2 as oauth
 import json
@@ -18,6 +19,8 @@ class TestPyblr:
             "sex": "male"
         }
         self.parsed_params = "name=toqoz&sex=male"
+        self.trackar = TraceTracker()
+        mock("pyblr.Pyblr.get", tracker=self.trackar)
 
     def assert_not_raise(self, excClass, callable_, *args, **kwargs):
         try:
@@ -41,11 +44,15 @@ class TestPyblr:
         )
         return result
 
+    def info_test(self):
+        self.client.info("toqoz.tumblr.com")
+        assert_same_trace(self.trackar, """\
+            Called pyblr.Pyblr.get(
+            '/v2/blog/toqoz.tumblr.com/info',
+            {'api_key': '""" + self.api_key + """'})""")
+
     def parse_params_test(self):
-        assert_equals(
-            self.client.parse_params(self.params),
-            self.parsed_params
-        )
+        assert_equals(self.client.parse_params(self.params), self.parsed_params)
 
     def APIError_test(self):
         self.assert_not_raise(pyblr.APIError, lambda: self.client.parse_response(self.create_response('200', 'OK')))
