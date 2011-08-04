@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 from nose.tools import *
 from minimock import mock, Mock, restore, TraceTracker, assert_same_trace 
-import pyblr
+from ..lib import pyblr
 import oauth2 as oauth
 import json
 
