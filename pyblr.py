@@ -47,7 +47,7 @@ class Pyblr:
                 if re.compile("%s").search(api["path"]):
                     api["path"] = api["path"] % base_hostname
                 if api["auth"] == "api_key":
-                    params = dict(params.items() + self.api_key().items())
+                    params = dict(self.api_key().items() + params.items())
                 return getattr(self, api['http_method'])(api["path"], params)
             setattr(self, api["method_name"], _method)
 
